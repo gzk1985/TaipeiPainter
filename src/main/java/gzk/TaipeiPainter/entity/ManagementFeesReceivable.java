@@ -1,17 +1,17 @@
 package gzk.TaipeiPainter.entity;
 
 public class ManagementFeesReceivable {
-	private String ownerDoortablet ;
+	private String doortablet ;
 	private String beginDate ;
 	private String endDate ;
 	private int carNum = 0 ;
 	private int motorcycleNum = 0 ;
 	private String paymentRmk ;
-	public String getOwnerDoortablet() {
-		return ownerDoortablet;
+	public String getDoortablet() {
+		return doortablet;
 	}
-	public void setOwnerDoortablet(String ownerDoortablet) {
-		this.ownerDoortablet = ownerDoortablet;
+	public void setDoortablet(String doortablet) {
+		this.doortablet = doortablet;
 	}
 	public String getBeginDate() {
 		return beginDate;

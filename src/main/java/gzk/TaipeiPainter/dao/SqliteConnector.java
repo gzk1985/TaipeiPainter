@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SqliteConnector {
-	private final Logger LOG = LogManager.getLogger(SqliteConnector.class);
+	private static final Logger LOG = LogManager.getLogger(SqliteConnector.class);
 	private final String dbLocation = System.getProperty("user.dir")+"/";
 	private final String dbName = "台北畫家管理費資料庫.db" ;
 	private String dbUrl ;
@@ -63,15 +63,16 @@ public class SqliteConnector {
     
 	private void createManagementFeesReceivable() {
 		String sql = "CREATE TABLE \"management_fees_receivable\" (\n"
-				+ "	\"owner_doortablet\"	TEXT,\n"
+				+ "	\"doortablet\"	TEXT,\n"
 				+ "	\"begin_date\"	TEXT,\n"
 				+ "	\"end_date\"	TEXT,\n"
 				+ "	\"car_num\"	INTEGER,\n"
 				+ "	\"motorcycle_num\"	INTEGER,\n"
 				+ "	\"payment_rmk\"	TEXT,\n"
-				+ "	PRIMARY KEY(\"owner_doortablet\",\"begin_date\")\n"
+				+ "	PRIMARY KEY(\"doortablet\",\"begin_date\")\n"
 				+ ");";
 	       try (Connection conn = DriverManager.getConnection(dbUrl)) {
+	    	   conn.setAutoCommit(false);
 	            try(Statement stat = conn.createStatement()){
 	            	stat.execute(sql);
 	            	conn.commit();
@@ -81,12 +82,19 @@ public class SqliteConnector {
 	        }
 	}
 	private void createOwnerDoortabletInfo() {
-		String sql = "CREATE TABLE \"owner_doortablet_info\" (\n"
-				+ "	\"owner_doortablet\"	TEXT,\n"
+		String sql = "CREATE TABLE \"doortablet_info\" (\n"
+				+ "	\"doortablet\"	TEXT,\n"
 				+ "	\"owner_name\"	TEXT,\n"
-				+ "	PRIMARY KEY(\"owner_doortablet\")\n"
+				+ "	\"doortablet_code\"	TEXT,\n"
+				+ "	\"number_of_square_meters\"	NUMERIC,\n"
+				+ "	\"base_management_fee\"	NUMERIC,\n"
+				+ "	\"car_space\"	INTEGER,\n"
+				+ "	\"motorcycle_space\"	INTEGER,\n"
+				+ "	\"monthly_management_fee\"	NUMERIC,\n"
+				+ "	PRIMARY KEY(\"doortablet\")\n"
 				+ ");";
 	       try (Connection conn = DriverManager.getConnection(dbUrl)) {
+	    	   conn.setAutoCommit(false);
 	            try(Statement stat = conn.createStatement()){
 	            	stat.execute(sql);
 	            	conn.commit();
@@ -94,5 +102,11 @@ public class SqliteConnector {
 	        } catch (SQLException e) {
 	        	LOG.error(e);
 	        }
+	}
+	public void clean() {
+		File dbFile = new File(dbLocation,dbName);
+		if(!dbFile.exists()) {
+			dbFile.delete();
+		}
 	}
 }
