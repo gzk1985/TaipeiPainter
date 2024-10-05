@@ -3,6 +3,7 @@ package gzk.TaipeiPainter.exporter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,9 +58,12 @@ public class SimplePdfExporter {
 //			// 讀取製作的jrxml檔案並轉換成compileReport
 //			JasperReport report = JasperCompileManager.compileReport(design);
 			// 透過compile過的JasperReport製作JasperPrint
-			JasperPrint jasperPrint = JasperFillManager.fillReport(in, map, SqliteConnector.getInstance().getConnection());
-			LOG.info(String.format("PDFExporter JasperFillManager.fillReport(%s, %s)", "/管理費補繳通知單.jrxml", doortabletInfo.getDoortablet()));
-			JasperExportManager.exportReportToPdfFile(jasperPrint, fileOutputPath.getAbsolutePath());
+			try(Connection conn = SqliteConnector.getInstance().getConnection()){
+				JasperPrint jasperPrint = JasperFillManager.fillReport(in, map, conn);
+				LOG.info(String.format("PDFExporter JasperFillManager.fillReport(%s, %s)", "/管理費補繳通知單.jrxml", doortabletInfo.getDoortablet()));
+				JasperExportManager.exportReportToPdfFile(jasperPrint, fileOutputPath.getAbsolutePath());
+			}
+
 		} catch (Exception e) {
 			LOG.error(e.getMessage());
 		} 

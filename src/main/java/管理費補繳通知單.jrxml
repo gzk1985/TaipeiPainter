@@ -32,9 +32,7 @@
 	<dataset name="Dataset1" uuid="18f8f35c-73be-40cf-978d-98dba4e4d3f0">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
-		<parameter name="sql_doortablet" class="java.lang.String">
-			<defaultValueExpression><![CDATA["六福路247巷1號七樓"]]></defaultValueExpression>
-		</parameter>
+		<parameter name="sql_doortablet" class="java.lang.String"/>
 		<query language="SQL"><![CDATA[WITH tmp AS (
 SELECT c.*
 ,diff_months*base_management_fee as management_fee
@@ -97,14 +95,14 @@ WHERE doortablet =  $P{owner_doorplate} ]]></query>
 		</element>
 	</title>
 	<detail>
-		<band height="154" splitType="Stretch">
-			<element kind="textField" uuid="60ac80b7-867d-47ea-88ff-63ad5e97f284" x="0" y="24" width="549" height="30" fontName="標楷體" fontSize="16.0">
+		<band height="166" splitType="Stretch">
+			<element kind="textField" uuid="60ac80b7-867d-47ea-88ff-63ad5e97f284" x="0" y="20" width="549" height="46" fontName="標楷體" fontSize="16.0">
 				<expression><![CDATA["貴區權人：台北畫家 "+$P{owner_doorplate}+" "+$F{owner_name}+" 先生/小姐"]]></expression>
 			</element>
-			<element kind="staticText" uuid="25d261cb-05da-44c4-8a24-a02764736be6" x="0" y="54" width="549" height="30" fontName="標楷體" fontSize="16.0">
+			<element kind="staticText" uuid="25d261cb-05da-44c4-8a24-a02764736be6" x="0" y="66" width="549" height="30" fontName="標楷體" fontSize="16.0">
 				<text><![CDATA[一、未繳款項：]]></text>
 			</element>
-			<element kind="component" uuid="b519df27-8b95-4eb8-b6d7-676c75651b28" x="0" y="84" width="549" height="70">
+			<element kind="component" uuid="b519df27-8b95-4eb8-b6d7-676c75651b28" x="0" y="96" width="549" height="70">
 				<component kind="table">
 					<datasetRun uuid="1351f559-e8c1-44e0-9220-873bf00e8a2c" subDataset="Dataset1">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -114,7 +112,7 @@ WHERE doortablet =  $P{owner_doorplate} ]]></query>
 					</datasetRun>
 					<column kind="single" uuid="3746aed2-39c5-4217-9dad-ed0f5605ee99" width="549">
 						<detailCell height="70">
-							<element kind="textField" uuid="5114f91f-6132-42b2-a152-9db636bf7e5c" x="0" y="0" width="549" height="70" fontName="標楷體" fontSize="16.0">
+							<element kind="textField" uuid="5114f91f-6132-42b2-a152-9db636bf7e5c" x="0" y="0" width="549" height="70" fontName="標楷體" fontSize="16.0" blankWhenNull="true">
 								<paragraph lineSpacing="Single" firstLineIndent="3" leftIndent="3" rightIndent="3" spacingBefore="3" spacingAfter="3"/>
 								<expression><![CDATA[$F{description}]]></expression>
 								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>

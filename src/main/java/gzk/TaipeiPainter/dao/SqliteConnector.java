@@ -2,12 +2,14 @@ package gzk.TaipeiPainter.dao;
 
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,12 +23,16 @@ public class SqliteConnector {
 	private SqliteConnector() {
 		dbUrl = String.format("jdbc:sqlite:%s%s",dbLocation, dbName);
 		File dbFile = new File(dbLocation,dbName);
-		if(!dbFile.exists()) {
-			this.createNewDatabase();
-			this.createManagementFeesReceivable();
-			this.createOwnerDoortabletInfo();
+		if(dbFile.exists()) {
+			try {
+				FileUtils.forceDelete(dbFile);
+			} catch (IOException e) {
+				LOG.error(e);
+			}
 		}
-		
+		this.createNewDatabase();
+		this.createManagementFeesReceivable();
+		this.createOwnerDoortabletInfo();
 	}
 	public static SqliteConnector getInstance() {
 		if(INSTANCE==null) {
@@ -106,7 +112,11 @@ public class SqliteConnector {
 	public void clean() {
 		File dbFile = new File(dbLocation,dbName);
 		if(!dbFile.exists()) {
-			dbFile.delete();
+			try {
+				FileUtils.forceDelete(dbFile);
+			} catch (IOException e) {
+				LOG.error(e);
+			}
 		}
 	}
 }
