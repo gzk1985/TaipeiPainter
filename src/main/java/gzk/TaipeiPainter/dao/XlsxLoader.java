@@ -20,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import gzk.TaipeiPainter.entity.ManagementFeesReceivable;
 import gzk.TaipeiPainter.entity.DoortabletInfo;
+import gzk.TaipeiPainter.entity.EventResidents;
 
 public class XlsxLoader {
 	private static final Logger LOG = LogManager.getLogger(XlsxLoader.class);
@@ -45,7 +46,7 @@ public class XlsxLoader {
 	}
 	public static List<DoortabletInfo> parseOwnerDoortabletInfoSheet(Workbook workbook) throws IOException {
 		List<DoortabletInfo> excelDataList = new ArrayList<>();
-		Sheet sheet = workbook.getSheetAt(0);
+		Sheet sheet = workbook.getSheet("門牌");
 		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 		int firstRowNum = sheet.getFirstRowNum();
 		Row firstRow = sheet.getRow(firstRowNum);
@@ -71,7 +72,7 @@ public class XlsxLoader {
 	}
 	public static List<ManagementFeesReceivable> parseManagementFeesReceivableSheet(Workbook workbook) throws IOException {
 		List<ManagementFeesReceivable> excelDataList = new ArrayList<>();
-		Sheet sheet = workbook.getSheetAt(1);
+		Sheet sheet = workbook.getSheet("應收管理費");
 		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 		int firstRowNum = sheet.getFirstRowNum();
 		Row firstRow = sheet.getRow(firstRowNum);
@@ -88,6 +89,32 @@ public class XlsxLoader {
 				continue;
 			}
 			ManagementFeesReceivable excelData = convertRowToManagementFeesReceivable(row,evaluator);
+			if (null == excelData) {
+				continue;
+			}
+			excelDataList.add(excelData);
+		}
+		return excelDataList;
+	}
+	public static List<EventResidents> parseEventResidendsSheet(Workbook workbook) throws IOException {
+		List<EventResidents> excelDataList = new ArrayList<>();
+		Sheet sheet = workbook.getSheet("承租");
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+		int firstRowNum = sheet.getFirstRowNum();
+		Row firstRow = sheet.getRow(firstRowNum);
+		int firstRowCellNum = firstRow.getLastCellNum();
+		if (null == firstRow||firstRowCellNum<4) {
+			throw new IOException("解析Excel失敗");
+		}
+
+		int rowStart = firstRowNum + 1;
+		int rowEnd = sheet.getPhysicalNumberOfRows();
+		for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+			Row row = sheet.getRow(rowNum);
+			if (null == row) {
+				continue;
+			}
+			EventResidents excelData = convertRowToEventResidents(row,evaluator);
 			if (null == excelData) {
 				continue;
 			}
@@ -163,6 +190,30 @@ public class XlsxLoader {
 		// 前置說明
 		String paymentRmk = convertCellValueToString(cell,evaluator);
 		excelData.setPaymentRmk(paymentRmk);
+		cell = row.getCell(cellNum++);
+		return excelData;
+	}
+	private static EventResidents convertRowToEventResidents(Row row,FormulaEvaluator evaluator) {
+		EventResidents excelData = new EventResidents();
+		Cell cell;
+		int cellNum = 0;
+		// 門牌
+		cell = row.getCell(cellNum++);
+		evaluator.evaluateFormulaCell(cell);
+		String doortablet = convertCellValueToString(cell,evaluator);
+		excelData.setDoortablet(doortablet);
+		cell = row.getCell(cellNum++);
+		// 起日
+		String beginDate = convertCellValueToString(cell,evaluator);
+		excelData.setBeginDate(beginDate);
+		cell = row.getCell(cellNum++);
+		// 迄日
+		String endDate = convertCellValueToString(cell,evaluator);
+		excelData.setEndDate(endDate);
+		cell = row.getCell(cellNum++);
+		// 住戶
+		String residentName = convertCellValueToString(cell,evaluator);
+		excelData.setResidentName(residentName);
 		cell = row.getCell(cellNum++);
 		return excelData;
 	}

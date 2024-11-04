@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import gzk.TaipeiPainter.entity.ManagementFeesReceivable;
 import gzk.TaipeiPainter.entity.DoortabletInfo;
+import gzk.TaipeiPainter.entity.EventResidents;
 
 public class SqliteDAO {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
@@ -92,5 +93,28 @@ public class SqliteDAO {
 			LOG.error(e);
 		}
 	}
-
+	public static void saveEventResidents(List<EventResidents> datas) {
+		String sql = "INSERT INTO event_residents (doortablet,begin_date,end_date,resident_name) VALUES (?,?,?,?) ;";
+		try(Connection conn = SqliteConnector.getInstance().getConnection()){
+			conn.setAutoCommit(false);
+			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+				datas.forEach(obj -> {
+					try {
+						pstmt.clearParameters();
+						pstmt.setString(1, obj.getDoortablet());
+						pstmt.setString(2, obj.getBeginDate());
+						pstmt.setString(3, obj.getEndDate());
+						pstmt.setString(4, obj.getResidentName());
+						pstmt.addBatch();
+					} catch (SQLException e) {
+						LOG.error(e);
+					}
+				});
+				pstmt.executeBatch();
+				conn.commit();
+			}
+		} catch (SQLException e) {
+			LOG.error(e);
+		}
+	}
 }
