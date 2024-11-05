@@ -2,6 +2,7 @@ package gzk.TaipeiPainter.entity;
 
 public class ManagementFeesReceivable {
 	private String doortablet ;
+	private String receiver ;
 	private String beginDate ;
 	private String endDate ;
 	private int carNum = 0 ;
@@ -12,6 +13,13 @@ public class ManagementFeesReceivable {
 	}
 	public void setDoortablet(String doortablet) {
 		this.doortablet = doortablet;
+	}
+	
+	public String getReceiver() {
+		return receiver;
+	}
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
 	}
 	public String getBeginDate() {
 		return beginDate;

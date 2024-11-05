@@ -33,7 +33,6 @@ public class SqliteConnector {
 		this.createNewDatabase();
 		this.createManagementFeesReceivable();
 		this.createOwnerDoortabletInfo();
-		this.createEeventResidents();
 	}
 	public static SqliteConnector getInstance() {
 		if(INSTANCE==null) {
@@ -71,6 +70,7 @@ public class SqliteConnector {
 	private void createManagementFeesReceivable() {
 		String sql = "CREATE TABLE \"management_fees_receivable\" (\n"
 				+ "	\"doortablet\"	TEXT,\n"
+				+ "	\"receiver\"	TEXT,\n"
 				+ "	\"begin_date\"	TEXT,\n"
 				+ "	\"end_date\"	TEXT,\n"
 				+ "	\"car_num\"	INTEGER,\n"
@@ -99,25 +99,6 @@ public class SqliteConnector {
 				+ "	\"motorcycle_space\"	INTEGER,\n"
 				+ "	\"monthly_management_fee\"	NUMERIC,\n"
 				+ "	PRIMARY KEY(\"doortablet\")\n"
-				+ ");";
-	       try (Connection conn = DriverManager.getConnection(dbUrl)) {
-	    	   conn.setAutoCommit(false);
-	            try(Statement stat = conn.createStatement()){
-	            	stat.execute(sql);
-	            	conn.commit();
-	            }
-	        } catch (SQLException e) {
-	        	LOG.error(e);
-	        }
-	}
-	
-	private void createEeventResidents() {
-		String sql = "CREATE TABLE \"event_residents\" (\n"
-				+ "	\"doortablet\"	TEXT,\n"
-				+ "	\"begin_date\"	TEXT,\n"
-				+ "	\"end_date\"	TEXT,\n"
-				+ "	\"resident_name\"	TEXT,\n"
-				+ "	PRIMARY KEY(\"doortablet\",\"begin_date\")\n"
 				+ ");";
 	       try (Connection conn = DriverManager.getConnection(dbUrl)) {
 	    	   conn.setAutoCommit(false);

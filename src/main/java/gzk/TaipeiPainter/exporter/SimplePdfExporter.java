@@ -19,7 +19,9 @@ public class SimplePdfExporter {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
 	private final String reportRootPath = System.getProperty("user.dir");
 	private File outputDir ;
-	public SimplePdfExporter(){
+	private String jasperFile ;
+	public SimplePdfExporter(String jasperFile){
+		this.jasperFile = jasperFile.startsWith("/")?jasperFile:"/"+jasperFile ;
 		this.outputDir = new File(reportRootPath,"output");
 		if(!this.outputDir.exists()) {
 			this.outputDir.mkdir();
@@ -51,7 +53,7 @@ public class SimplePdfExporter {
 		Map<String,Object> map = new HashMap<>();
 		// 報表TITLE文字設定
 		map.put("owner_doorplate", doortabletInfo.getDoortablet());
-		try (InputStream in = SimplePdfExporter.class.getResourceAsStream("/管理費補繳通知單.jasper")){
+		try (InputStream in = SimplePdfExporter.class.getResourceAsStream(this.jasperFile)){
 			
 			// 讀取jrxml的InputStream
 //			JasperDesign design = JRXmlLoader.load(in);

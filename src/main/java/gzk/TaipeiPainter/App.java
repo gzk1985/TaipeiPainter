@@ -1,41 +1,17 @@
 package gzk.TaipeiPainter;
 
-import java.io.IOException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import gzk.TaipeiPainter.dao.SqliteConnector;
-import gzk.TaipeiPainter.dao.SqliteDAO;
-import gzk.TaipeiPainter.dao.XlsxLoader;
-import gzk.TaipeiPainter.entity.DoortabletInfo;
-import gzk.TaipeiPainter.exporter.SimplePdfExporter;
+import gzk.TaipeiPainter.exporter.PdfPrinter;
 
 /**
  * Hello world!
  *
  */
-public class App 
-{private static final Logger LOG = LogManager.getLogger(App.class);
-    public static void main( String[] args )
-    {
+public class App {
+	private static final Logger LOG = LogManager.getLogger(App.class);
+    public static void main( String[] args ){
     	LOG.info( "Hello World!" );
-        
-        try (Workbook book = XlsxLoader.getWorkbook("台北畫家管理費資訊-20241008.xlsx");){
-			
-			SqliteDAO.saveOwnerDoortabletInfo(XlsxLoader.parseOwnerDoortabletInfoSheet(book));
-			SqliteDAO.saveManagementFeesReceivable(XlsxLoader.parseManagementFeesReceivableSheet(book));
-			SqliteDAO.saveEventResidents(XlsxLoader.parseEventResidendsSheet(book));
-			SimplePdfExporter export = new SimplePdfExporter();
-			for(DoortabletInfo door:SqliteDAO.getDoortabletInfoList()) {
-				export.exportPdfReport(door);
-			}
-        } catch (IOException e) {
-			LOG.error(ExceptionUtils.getStackTrace(e));
-		} finally {
-			SqliteConnector.getInstance().clean();
-		}
+        PdfPrinter.print("台北畫家管理費資訊-20241102.xlsx","管理費補繳通知單-20241104.jasper");
     }
 }

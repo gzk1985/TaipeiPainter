@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import gzk.TaipeiPainter.entity.ManagementFeesReceivable;
 import gzk.TaipeiPainter.entity.DoortabletInfo;
-import gzk.TaipeiPainter.entity.EventResidents;
+
 
 public class SqliteDAO {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
@@ -68,7 +68,7 @@ public class SqliteDAO {
 		}
 	}
 	public static void saveManagementFeesReceivable(List<ManagementFeesReceivable> datas) {
-		String sql = "INSERT INTO management_fees_receivable (doortablet,begin_date,end_date,car_num,motorcycle_num,payment_rmk) VALUES (?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO management_fees_receivable (doortablet,receiver,begin_date,end_date,car_num,motorcycle_num,payment_rmk) VALUES (?,?,?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -76,35 +76,12 @@ public class SqliteDAO {
 					try {
 						pstmt.clearParameters();
 						pstmt.setString(1, obj.getDoortablet());
-						pstmt.setString(2, obj.getBeginDate());
-						pstmt.setString(3, obj.getEndDate());
-						pstmt.setInt(4, obj.getCarNum());
-						pstmt.setInt(5, obj.getMotorcycleNum());
-						pstmt.setString(6, obj.getPaymentRmk());
-						pstmt.addBatch();
-					} catch (SQLException e) {
-						LOG.error(e);
-					}
-				});
-				pstmt.executeBatch();
-				conn.commit();
-			}
-		} catch (SQLException e) {
-			LOG.error(e);
-		}
-	}
-	public static void saveEventResidents(List<EventResidents> datas) {
-		String sql = "INSERT INTO event_residents (doortablet,begin_date,end_date,resident_name) VALUES (?,?,?,?) ;";
-		try(Connection conn = SqliteConnector.getInstance().getConnection()){
-			conn.setAutoCommit(false);
-			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-				datas.forEach(obj -> {
-					try {
-						pstmt.clearParameters();
-						pstmt.setString(1, obj.getDoortablet());
-						pstmt.setString(2, obj.getBeginDate());
-						pstmt.setString(3, obj.getEndDate());
-						pstmt.setString(4, obj.getResidentName());
+						pstmt.setString(2, obj.getReceiver());
+						pstmt.setString(3, obj.getBeginDate());
+						pstmt.setString(4, obj.getEndDate());
+						pstmt.setInt(5, obj.getCarNum());
+						pstmt.setInt(6, obj.getMotorcycleNum());
+						pstmt.setString(7, obj.getPaymentRmk());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(e);

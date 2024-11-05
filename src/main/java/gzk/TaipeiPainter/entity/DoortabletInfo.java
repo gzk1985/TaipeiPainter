@@ -10,6 +10,7 @@ public class DoortabletInfo {
 	private int carSpace ;
 	private int motorcycleSpace ;
 	private double monthlyManagementFee ;
+	private boolean printable ;
 	public String getDoortablet() {
 		return doortablet;
 	}
@@ -57,6 +58,12 @@ public class DoortabletInfo {
 	}
 	public void setMonthlyManagementFee(double monthlyManagementFee) {
 		this.monthlyManagementFee = monthlyManagementFee;
+	}
+	public boolean isPrintable() {
+		return printable;
+	}
+	public void setPrintable(boolean printable) {
+		this.printable = printable;
 	}
 	
 }
