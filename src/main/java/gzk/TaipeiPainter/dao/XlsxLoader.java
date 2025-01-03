@@ -129,6 +129,10 @@ public class XlsxLoader {
 		int motorcycleNum = Integer.valueOf(convertCellValueToString(cell,evaluator));
 		excelData.setMotorcycleSpace(motorcycleNum);
 		cell = row.getCell(cellNum++);
+		// 繳款頻率
+		String paymentFrequency = convertCellValueToString(cell,evaluator);
+		excelData.setPaymentFrequency(paymentFrequency);
+		cell = row.getCell(cellNum++);
 		// 基礎管理費
 		int monthlyManagementFee = Integer.valueOf(convertCellValueToString(cell,evaluator));
 		excelData.setMonthlyManagementFee(monthlyManagementFee);

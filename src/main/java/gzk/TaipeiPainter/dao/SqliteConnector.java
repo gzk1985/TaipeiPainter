@@ -97,6 +97,7 @@ public class SqliteConnector {
 				+ "	\"base_management_fee\"	NUMERIC,\n"
 				+ "	\"car_space\"	INTEGER,\n"
 				+ "	\"motorcycle_space\"	INTEGER,\n"
+				+ "	\"payment_frequency\"	TEXT,\n"
 				+ "	\"monthly_management_fee\"	NUMERIC,\n"
 				+ "	PRIMARY KEY(\"doortablet\")\n"
 				+ ");";

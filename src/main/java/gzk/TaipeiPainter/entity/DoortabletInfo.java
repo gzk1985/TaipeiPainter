@@ -11,6 +11,7 @@ public class DoortabletInfo {
 	private int motorcycleSpace ;
 	private double monthlyManagementFee ;
 	private boolean printable ;
+	private String paymentFrequency;
 	public String getDoortablet() {
 		return doortablet;
 	}
@@ -64,6 +65,12 @@ public class DoortabletInfo {
 	}
 	public void setPrintable(boolean printable) {
 		this.printable = printable;
+	}
+	public String getPaymentFrequency() {
+		return paymentFrequency;
+	}
+	public void setPaymentFrequency(String paymentFrequency) {
+		this.paymentFrequency = paymentFrequency;
 	}
 	
 }

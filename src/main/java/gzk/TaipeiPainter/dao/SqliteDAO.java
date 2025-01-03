@@ -40,7 +40,7 @@ public class SqliteDAO {
 	}
 	
 	public static void saveOwnerDoortabletInfo(List<DoortabletInfo> datas) {
-		String sql = "INSERT INTO doortablet_info (doortablet,owner_name,doortablet_code,number_of_square_meters,base_management_fee,car_space,motorcycle_space,monthly_management_fee) VALUES (?,?,?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO doortablet_info (doortablet,owner_name,doortablet_code,number_of_square_meters,base_management_fee,car_space,motorcycle_space,payment_frequency,monthly_management_fee) VALUES (?,?,?,?,?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -54,7 +54,8 @@ public class SqliteDAO {
 						pstmt.setDouble(5, obj.getBaseManagementFee());
 						pstmt.setInt(6, obj.getCarSpace());
 						pstmt.setInt(7, obj.getMotorcycleSpace());
-						pstmt.setDouble(8, obj.getMonthlyManagementFee());
+						pstmt.setString(8, obj.getPaymentFrequency());
+						pstmt.setDouble(9, obj.getMonthlyManagementFee());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(e);
