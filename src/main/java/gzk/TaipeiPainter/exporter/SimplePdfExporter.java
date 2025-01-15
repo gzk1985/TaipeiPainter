@@ -53,6 +53,7 @@ public class SimplePdfExporter {
 		Map<String,Object> map = new HashMap<>();
 		// 報表TITLE文字設定
 		map.put("owner_doorplate", doortabletInfo.getDoortablet());
+		map.put("receiver", doortabletInfo.getReceiver());
 		try (InputStream in = SimplePdfExporter.class.getResourceAsStream(this.jasperFile)){
 			
 			// 讀取jrxml的InputStream

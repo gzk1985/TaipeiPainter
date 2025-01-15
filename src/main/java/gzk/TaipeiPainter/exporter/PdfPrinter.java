@@ -20,7 +20,12 @@ public class PdfPrinter {
 			SqliteDAO.saveManagementFeesReceivable(XlsxLoader.parseManagementFeesReceivableSheet(book));
 			SimplePdfExporter export = new SimplePdfExporter(jasperFile);
 			for(DoortabletInfo door:SqliteDAO.getDoortabletInfoList()) {
-				export.exportPdfReport(door);
+				if(door.isPrintable()) {
+					export.exportPdfReport(door);
+				}else {
+					LOG.info(String.format("%s 設定不列印", door.getDoortablet()));
+				}
+				
 			}
         } catch (IOException e) {
 			LOG.error(ExceptionUtils.getStackTrace(e));

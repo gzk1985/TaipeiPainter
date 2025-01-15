@@ -18,7 +18,12 @@ public class SqliteDAO {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
 	
 	public static List<DoortabletInfo> getDoortabletInfoList(){
-		String sql = "SELECT * FROM doortablet_info WHERE base_management_fee > 0 ;";
+		String sql = "SELECT i.doortablet,i.doortablet_code,i.owner_name,i.printable,r.receiver\n"
+				+ "FROM doortablet_info AS i\n"
+				+ "LEFT JOIN (\n"
+				+ "SELECT DISTINCT doortablet, receiver FROM management_fees_receivable\n"
+				+ ") AS r ON (i.doortablet = r.doortablet)\n"
+				+ "WHERE i.base_management_fee > 0 ;";
 		List<DoortabletInfo> list = new ArrayList<>();
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
@@ -29,6 +34,8 @@ public class SqliteDAO {
 						o.setDoortablet(res.getString("doortablet"));
 						o.setDoortabletCode(res.getString("doortablet_code"));
 						o.setOwnerName(res.getString("owner_name"));
+						o.setReceiver(res.getString("receiver"));
+						o.setPrintable(res.getBoolean("printable"));
 						list.add(o);
 					}
 				}
@@ -40,7 +47,7 @@ public class SqliteDAO {
 	}
 	
 	public static void saveOwnerDoortabletInfo(List<DoortabletInfo> datas) {
-		String sql = "INSERT INTO doortablet_info (doortablet,owner_name,doortablet_code,number_of_square_meters,base_management_fee,car_space,motorcycle_space,payment_frequency,monthly_management_fee) VALUES (?,?,?,?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO doortablet_info (doortablet,owner_name,doortablet_code,number_of_square_meters,base_management_fee,car_space,motorcycle_space,payment_frequency,monthly_management_fee,printable) VALUES (?,?,?,?,?,?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -56,6 +63,7 @@ public class SqliteDAO {
 						pstmt.setInt(7, obj.getMotorcycleSpace());
 						pstmt.setString(8, obj.getPaymentFrequency());
 						pstmt.setDouble(9, obj.getMonthlyManagementFee());
+						pstmt.setBoolean(10, obj.isPrintable());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(e);

@@ -12,6 +12,9 @@ public class DoortabletInfo {
 	private double monthlyManagementFee ;
 	private boolean printable ;
 	private String paymentFrequency;
+	
+	//from management_fees_receivable
+	private String receiver;
 	public String getDoortablet() {
 		return doortablet;
 	}
@@ -71,6 +74,12 @@ public class DoortabletInfo {
 	}
 	public void setPaymentFrequency(String paymentFrequency) {
 		this.paymentFrequency = paymentFrequency;
+	}
+	public String getReceiver() {
+		return receiver;
+	}
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
 	}
 	
 }

@@ -62,7 +62,7 @@ public class XlsxLoader {
 				continue;
 			}
 			DoortabletInfo excelData = convertRowToOwnerDoortabletInfo(row,evaluator);
-			if (null == excelData||!excelData.isPrintable()) {
+			if (null == excelData) {
 				continue;
 			}
 			excelDataList.add(excelData);
