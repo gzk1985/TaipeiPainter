@@ -3,6 +3,7 @@ package gzk.TaipeiPainter.dao;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,6 +178,11 @@ public class XlsxLoader {
 		// 前置說明
 		String paymentRmk = convertCellValueToString(cell,evaluator);
 		excelData.setPaymentRmk(paymentRmk);
+		cell = row.getCell(cellNum++);
+		// 其它應收款項
+		String otherAmountStr = convertCellValueToString(cell,evaluator) ;
+		BigDecimal otherAmount = otherAmountStr == null? null:new BigDecimal(otherAmountStr);
+		excelData.setOtherAmount(otherAmount);
 		cell = row.getCell(cellNum++);
 		return excelData;
 	}

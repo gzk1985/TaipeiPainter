@@ -77,7 +77,7 @@ public class SqliteDAO {
 		}
 	}
 	public static void saveManagementFeesReceivable(List<ManagementFeesReceivable> datas) {
-		String sql = "INSERT INTO management_fees_receivable (doortablet,receiver,begin_date,end_date,car_num,motorcycle_num,payment_rmk) VALUES (?,?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO management_fees_receivable (doortablet,receiver,begin_date,end_date,car_num,motorcycle_num,payment_rmk,other_amount) VALUES (?,?,?,?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -91,6 +91,7 @@ public class SqliteDAO {
 						pstmt.setInt(5, obj.getCarNum());
 						pstmt.setInt(6, obj.getMotorcycleNum());
 						pstmt.setString(7, obj.getPaymentRmk());
+						pstmt.setBigDecimal(8, obj.getOtherAmount());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(e);

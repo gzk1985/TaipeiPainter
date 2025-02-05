@@ -76,6 +76,7 @@ public class SqliteConnector {
 				+ "	\"car_num\"	INTEGER,\n"
 				+ "	\"motorcycle_num\"	INTEGER,\n"
 				+ "	\"payment_rmk\"	TEXT,\n"
+				+ "	\"other_amount\"	NUMERIC,\n"
 				+ "	PRIMARY KEY(\"doortablet\",\"begin_date\")\n"
 				+ ");";
 	       try (Connection conn = DriverManager.getConnection(dbUrl)) {
