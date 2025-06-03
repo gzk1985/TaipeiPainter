@@ -62,14 +62,65 @@
 			<artifactId>font-msjh</artifactId>
 			<version>1.0.0</version>
 			<scope>system</scope>
-			<systemPath>C:\Users\2010070501\git\TaipeiPainter\libs\font-msjh.jar</systemPath>
+			<systemPath>D:\System\NEW_SVN\TaipeiPainter\libs\font-msjh.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>font-kaiu</groupId>
 			<artifactId>font-kaiu</artifactId>
 			<version>1.0.0</version>
 			<scope>system</scope>
-			<systemPath>C:\Users\2010070501\git\TaipeiPainter\libs\font-kaiu.jar</systemPath>
+			<systemPath>D:\System\NEW_SVN\TaipeiPainter\libs\font-kaiu.jar</systemPath>
 		</dependency>
 	</dependencies>
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>gzk.TaipeiPainter.App</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/libs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

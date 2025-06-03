@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -68,7 +69,7 @@ public class SimplePdfExporter {
 			}
 
 		} catch (Exception e) {
-			LOG.error(e.getMessage());
+			LOG.error(ExceptionUtils.getStackTrace(e));
 		} 
 	}
 	

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class SqliteConnector {
 			try {
 				FileUtils.forceDelete(dbFile);
 			} catch (IOException e) {
-				LOG.error(e);
+				LOG.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
 		this.createNewDatabase();
@@ -63,7 +64,7 @@ public class SqliteConnector {
             }
  
         } catch (SQLException e) {
-            LOG.error(e);
+			LOG.error(ExceptionUtils.getStackTrace(e));
         }
     }
     
@@ -86,7 +87,7 @@ public class SqliteConnector {
 	            	conn.commit();
 	            }
 	        } catch (SQLException e) {
-	        	LOG.error(e);
+			   LOG.error(ExceptionUtils.getStackTrace(e));
 	        }
 	}
 	private void createOwnerDoortabletInfo() {
@@ -110,7 +111,7 @@ public class SqliteConnector {
 	            	conn.commit();
 	            }
 	        } catch (SQLException e) {
-	        	LOG.error(e);
+			   LOG.error(ExceptionUtils.getStackTrace(e));
 	        }
 	}
 	
@@ -120,7 +121,7 @@ public class SqliteConnector {
 			try {
 				FileUtils.forceDelete(dbFile);
 			} catch (IOException e) {
-				LOG.error(e);
+				LOG.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
 	}

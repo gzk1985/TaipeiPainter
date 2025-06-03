@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class SqliteDAO {
 				}
 			}
 		} catch (SQLException e) {
-			LOG.error(e);
+			LOG.error(ExceptionUtils.getStackTrace(e));
 		}
 		return list ;
 	}
@@ -66,14 +67,14 @@ public class SqliteDAO {
 						pstmt.setBoolean(10, obj.isPrintable());
 						pstmt.addBatch();
 					} catch (SQLException e) {
-						LOG.error(e);
+						LOG.error(ExceptionUtils.getStackTrace(e));
 					}
 				});
 				pstmt.executeBatch();
 				conn.commit();
 			}
 		} catch (SQLException e) {
-			LOG.error(e);
+			LOG.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 	public static void saveManagementFeesReceivable(List<ManagementFeesReceivable> datas) {
@@ -94,14 +95,14 @@ public class SqliteDAO {
 						pstmt.setBigDecimal(8, obj.getOtherAmount());
 						pstmt.addBatch();
 					} catch (SQLException e) {
-						LOG.error(e);
+						LOG.error(ExceptionUtils.getStackTrace(e));
 					}
 				});
 				pstmt.executeBatch();
 				conn.commit();
 			}
 		} catch (SQLException e) {
-			LOG.error(e);
+			LOG.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 }
