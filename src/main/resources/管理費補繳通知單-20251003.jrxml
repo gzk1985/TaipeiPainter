@@ -1,0 +1,232 @@
+<!-- Created with Jaspersoft Studio version 7.0.2.final using JasperReports Library version 7.0.2-31532122640f516c6d17238ae0e41a08113d5ac0  -->
+<jasperReport name="管理費補繳通知單-20250204" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="81972828-1664-499d-bf8f-435e364157cd">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset1" uuid="18f8f35c-73be-40cf-978d-98dba4e4d3f0">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="287"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="706"/>
+		<parameter name="sql_doortablet" class="java.lang.String"/>
+		<parameter name="sql_receiver" class="java.lang.String"/>
+		<query language="SQL"><![CDATA[WITH tmp AS (
+SELECT c.*
+,diff_months*base_management_fee as management_fee
+,diff_months*car_num*100 as car_fee
+,diff_months*motorcycle_num*50 as motorcycle_fee
+FROM (
+SELECT b.*
+,CASE WHEN  b.end_year > begin_year THEN
+ (b.end_year - begin_year-1)*12+(b.end_month+12-b.begin_month)+1 ELSE 
+ (b.end_year - begin_year)*12+(b.end_month-b.begin_month)+1 END diff_months
+FROM (
+SELECT a.*,b.base_management_fee
+,CAST(SUBSTRING(a.begin_date, 1, INSTR(a.begin_date, '/')-1) as INT) - 1911 as begin_year
+,CAST(SUBSTR(a.begin_date, INSTR(a.begin_date, '/')+1,2)  as INT)  as begin_month
+,CAST(SUBSTRING(a.end_date, 1, INSTR(a.end_date, '/')-1) as INT) - 1911 as end_year
+,CAST(SUBSTR(a.end_date, INSTR(a.end_date, '/')+1,2)  as INT)  as end_month
+FROM management_fees_receivable as a
+JOIN doortablet_info AS b ON (b.doortablet = a.doortablet)
+WHERE  a.doortablet =  $P{sql_doortablet} AND ( $P{sql_receiver} IS NULL OR a.receiver =  $P{sql_receiver})
+) as b
+) as c
+)
+,items AS (
+SELECT "◆ "|| (CASE WHEN payment_rmk IS NULL OR payment_rmk == "" THEN "" 
+WHEN payment_rmk = '本期管理費' THEN payment_rmk||"，您的管理費自民國"||begin_year||"年"||begin_month||"月份至"||end_year||"年"||end_month||"月份止，應繳納社區管理費"||management_fee||"元、汽車清潔費"||car_fee||"元、機車清潔費"||motorcycle_fee||"元，本項小計共"||(management_fee+car_fee+motorcycle_fee)||"元。" 
+ELSE payment_rmk||" "||other_amount||" 元" 
+END) as description
+,CASE WHEN other_amount IS NOT NULL THEN other_amount ELSE (management_fee+car_fee+motorcycle_fee) END AS fee
+ FROM tmp
+ UNION ALL
+ SELECT "◆ 協議償還 2015年5月至2024年4月積欠管理費，共分20期，第"||(20 - diff_month+1)||"期 1,750 元" as description
+ ,1750 as fee
+FROM (
+SELECT CASE WHEN end_year > current_year THEN (end_year - current_year)*12+end_month-current_month 
+            WHEN current_month < end_month THEN end_month-current_month ELSE 0 END diff_month
+FROM (
+SELECT CAST(SUBSTRING(m.current_date, 1, INSTR(m.current_date, '-')-1) as INT) - 1911 as current_year
+,CAST(SUBSTR(m.current_date, INSTR(m.current_date, '-')+1,2)  as INT)  as current_month
+,CAST(SUBSTRING(m.end_date, 1, INSTR(m.end_date, '-')-1) as INT) - 1911 as end_year
+,CAST(SUBSTR(m.end_date, INSTR(m.end_date, '-')+1,2)  as INT)  as end_month
+FROM (
+SELECT date('now') AS current_date,'2026-07-01' AS end_date
+WHERE date('now') < '2026-07-01'
+AND $P{sql_doortablet} = '六福路247巷1號三樓'
+) AS m
+) AS m2
+) AS m3
+ UNION ALL
+ SELECT case when (18 - diff_month +1) = 18 then 
+  "◆ 協議償還 2020年5月至2024年8月積欠管理費，共分18期，第"||(18 - diff_month +1)||"期 400 元"
+  else 
+  "◆ 協議償還 2020年5月至2024年8月積欠管理費，共分18期，第"||(18 - diff_month +1)||"期 1,500 元" end as description
+ ,case when (18 - diff_month +1) = 18 then 400 else 1500 end as fee
+FROM (
+SELECT CASE WHEN end_year > current_year THEN (end_year - current_year)*12+end_month-current_month 
+            WHEN current_month < end_month THEN end_month-current_month ELSE 0 END diff_month
+FROM (
+SELECT CAST(SUBSTRING(m.current_date, 1, INSTR(m.current_date, '-')-1) as INT) - 1911 as current_year
+,CAST(SUBSTR(m.current_date, INSTR(m.current_date, '-')+1,2)  as INT)  as current_month
+,CAST(SUBSTRING(m.end_date, 1, INSTR(m.end_date, '-')-1) as INT) - 1911 as end_year
+,CAST(SUBSTR(m.end_date, INSTR(m.end_date, '-')+1,2)  as INT)  as end_month
+FROM (
+SELECT date('now') AS current_date,'2026-07-01' AS end_date
+WHERE date('now') < '2026-07-01'
+AND $P{sql_doortablet} in ( '六福路247巷3號','六福路247巷3號二樓')
+) AS m
+) AS m2
+) AS m3
+)
+SELECT description
+FROM items
+ UNION ALL
+ SELECT "◆◆◆◆◆ 合計應繳納管理費共"||(sum(fee))||"元。◆◆◆◆◆" as description
+ FROM items
+  
+]]></query>
+		<field name="description" class="java.lang.Object">
+			<property name="com.jaspersoft.studio.field.name" value="description"/>
+			<property name="com.jaspersoft.studio.field.label" value="description"/>
+		</field>
+	</dataset>
+	<parameter name="owner_doorplate" class="java.lang.String">
+		<defaultValueExpression><![CDATA["六福路247巷1號七樓"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="receiver" class="java.lang.String"/>
+	<query language="sql"><![CDATA[SELECT owner_name  
+FROM doortablet_info
+WHERE doortablet =  $P{owner_doorplate} ]]></query>
+	<field name="owner_name" class="java.lang.Object">
+		<property name="com.jaspersoft.studio.field.name" value="owner_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="owner_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="doortablet_info"/>
+	</field>
+	<variable name="receiver_name" class="java.lang.String">
+		<expression><![CDATA[$P{receiver}==null?$F{owner_name}:$P{receiver}]]></expression>
+	</variable>
+	<background splitType="Stretch"/>
+	<title height="60" splitType="Stretch">
+		<element kind="staticText" uuid="52e17b0e-8390-4e90-9d27-99c6f9a2ebde" x="0" y="0" width="549" height="30" fontName="標楷體" fontSize="20.0" hTextAlign="Center">
+			<text><![CDATA[管理費繳費通知單]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="f572884b-e632-4d74-8ec8-0b8bb98eacf6" x="0" y="30" width="50" height="30" fontName="標楷體" fontSize="14.0" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[日期：]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="e81ac85b-23ad-4835-b6d4-f5bf794fa822" x="50" y="30" width="120" height="30" fontName="標楷體" fontSize="12.0" vTextAlign="Middle">
+			<expression><![CDATA[new SimpleDateFormat("yyyy/MM/dd").format(new Date())]]></expression>
+		</element>
+	</title>
+	<detail>
+		<band height="114" splitType="Stretch">
+			<element kind="textField" uuid="60ac80b7-867d-47ea-88ff-63ad5e97f284" x="0" y="0" width="549" height="46" fontName="標楷體" fontSize="16.0">
+				<expression><![CDATA["貴住戶：台北畫家 "+$P{owner_doorplate}+" "+$V{receiver_name}+" 先生/小姐"+" ,所屬區權人： "+$F{owner_name}+" 先生/小姐"]]></expression>
+			</element>
+			<element kind="staticText" uuid="25d261cb-05da-44c4-8a24-a02764736be6" x="0" y="50" width="549" height="30" fontName="標楷體" fontSize="16.0">
+				<text><![CDATA[一、應繳款項：]]></text>
+			</element>
+			<element kind="component" uuid="b519df27-8b95-4eb8-b6d7-676c75651b28" x="0" y="80" width="549" height="34">
+				<component kind="table">
+					<datasetRun uuid="fe8b8102-c07d-4e86-af74-d394389a7b14" subDataset="Dataset1">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<parameter name="sql_doortablet">
+							<expression><![CDATA[$P{owner_doorplate}]]></expression>
+						</parameter>
+						<parameter name="sql_receiver">
+							<expression><![CDATA[$P{receiver}]]></expression>
+						</parameter>
+					</datasetRun>
+					<column kind="single" uuid="3746aed2-39c5-4217-9dad-ed0f5605ee99" width="549">
+						<detailCell height="50">
+							<element kind="textField" uuid="5114f91f-6132-42b2-a152-9db636bf7e5c" x="0" y="0" width="549" height="50" fontName="標楷體" fontSize="16.0" blankWhenNull="true">
+								<paragraph lineSpacing="Single" firstLineIndent="3" leftIndent="3" rightIndent="3" spacingBefore="3" spacingAfter="3"/>
+								<expression><![CDATA[$F{description}]]></expression>
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+								<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+								<box>
+									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</detailCell>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+			</element>
+		</band>
+		<band height="110">
+			<element kind="textField" uuid="1d1c0dc2-db20-46d1-b113-3ccac5be8f3d" x="0" y="30" width="550" height="80" fontName="標楷體" fontSize="16.0">
+				<expression><![CDATA["  請於 "+new SimpleDateFormat("yyyy年MM月20日").format(new Date())+"前，轉帳至下列社區帳戶，繳款完成後，請提供轉帳銀行和帳號後5碼給管委會，經查核後會在次月開立收據給住戶。金額3仟以下，若需要繳現金，請自行與財委聯繫預約時間。"]]></expression>
+			</element>
+			<element kind="staticText" uuid="df1bec1a-1f54-4043-9eca-1778212c176f" x="0" y="0" width="549" height="30" fontName="標楷體" fontSize="16.0">
+				<text><![CDATA[二、繳款方式：]]></text>
+			</element>
+		</band>
+		<band height="193">
+			<element kind="staticText" uuid="553794c1-1369-437f-a766-ae764baaa830" x="0" y="0" width="240" height="30" fontName="標楷體" fontSize="16.0" vTextAlign="Middle">
+				<paragraph leftIndent="10"/>
+				<text><![CDATA[電匯 合作金庫銀行南崁分行]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="c37afcc1-f369-47a9-b2d9-53446917d200" x="0" y="30" width="240" height="30" fontName="標楷體" fontSize="16.0" vTextAlign="Middle">
+				<paragraph leftIndent="10"/>
+				<text><![CDATA[帳號 5458-871-001116]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="d44d0db2-5ad3-4318-bfbc-f709be6a86ea" x="0" y="60" width="240" height="30" fontName="標楷體" fontSize="16.0" vTextAlign="Middle">
+				<paragraph leftIndent="10"/>
+				<text><![CDATA[戶名 台北畫家社區管理委員會]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="image" uuid="4d9b4c12-28ee-475f-87c8-47ac05aea86c" x="240" y="0" width="304" height="160">
+				<expression><![CDATA["台北畫家存摺.png"]]></expression>
+			</element>
+		</band>
+	</detail>
+	<summary height="30" splitType="Stretch">
+		<element kind="staticText" uuid="c8f78ba2-7727-45f0-b74d-5dbd85de293f" x="320" y="0" width="230" height="30" fontName="標楷體" fontSize="16.0" vTextAlign="Middle">
+			<text><![CDATA[台北畫家社區管理委員會 啟]]></text>
+		</element>
+	</summary>
+</jasperReport>
