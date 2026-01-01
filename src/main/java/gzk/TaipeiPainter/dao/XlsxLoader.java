@@ -51,8 +51,8 @@ public class XlsxLoader {
 		int firstRowNum = sheet.getFirstRowNum();
 		Row firstRow = sheet.getRow(firstRowNum);
 		int firstRowCellNum = firstRow.getLastCellNum();
-		if (null == firstRow||firstRowCellNum<6) {
-			throw new IOException("解析Excel失敗");
+		if (firstRowCellNum<14) {
+			throw new IOException("cell數不足，解析Excel失敗");
 		}
 
 		int rowStart = firstRowNum + 1;
@@ -63,10 +63,7 @@ public class XlsxLoader {
 				continue;
 			}
 			DoortabletInfo excelData = convertRowToOwnerDoortabletInfo(row,evaluator);
-			if (null == excelData) {
-				continue;
-			}
-			excelDataList.add(excelData);
+            excelDataList.add(excelData);
 		}
 		return excelDataList;
 	}
@@ -77,8 +74,8 @@ public class XlsxLoader {
 		int firstRowNum = sheet.getFirstRowNum();
 		Row firstRow = sheet.getRow(firstRowNum);
 		int firstRowCellNum = firstRow.getLastCellNum();
-		if (null == firstRow||firstRowCellNum<6) {
-			throw new IOException("解析Excel失敗");
+		if (firstRowCellNum<5) {
+			throw new IOException("cell數不足，解析Excel失敗");
 		}
 
 		int rowStart = firstRowNum + 1;
@@ -89,10 +86,7 @@ public class XlsxLoader {
 				continue;
 			}
 			ManagementFeesReceivable excelData = convertRowToManagementFeesReceivable(row,evaluator);
-			if (null == excelData) {
-				continue;
-			}
-			excelDataList.add(excelData);
+            excelDataList.add(excelData);
 		}
 		return excelDataList;
 	}
@@ -110,36 +104,66 @@ public class XlsxLoader {
 		String ownerName = convertCellValueToString(cell,evaluator);
 		excelData.setOwnerName(ownerName);
 		cell = row.getCell(cellNum++);
-		// 區分所有權人
+		// 收款對象
+		String receiver = convertCellValueToString(cell,evaluator);
+		excelData.setReceiverName(receiver);
+		cell = row.getCell(cellNum++);
+		// 門牌代碼
 		String doortabletCode = convertCellValueToString(cell,evaluator);
 		excelData.setDoortabletCode(doortabletCode);
 		cell = row.getCell(cellNum++);
-		// 坪數
-		double numberOfSquareMeters = Double.valueOf(convertCellValueToString(cell,evaluator));
+		// 建物坪數
+		String numberOfSquareMetersStr = convertCellValueToString(cell,evaluator);
+		double numberOfSquareMeters = Double.parseDouble(numberOfSquareMetersStr);
 		excelData.setNumberfSquareMeters(numberOfSquareMeters);
 		cell = row.getCell(cellNum++);
-		// 基本管理費
-		double baseManagementFee = Double.valueOf(convertCellValueToString(cell,evaluator));
+		// 車位坪數
+		String parkingSpaceSquareMetersStr = convertCellValueToString(cell,evaluator);
+		double parkingSpaceSquareMeters = parkingSpaceSquareMetersStr!=null?Double.parseDouble(parkingSpaceSquareMetersStr):0d;
+		excelData.setParkingSpaceSquareMeters(parkingSpaceSquareMeters);
+		cell = row.getCell(cellNum++);
+		// 管理費坪數
+		double numberOfSquareMetersForManagementFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setNumberOfSquareMetersForManagementFee(numberOfSquareMetersForManagementFee);
+		cell = row.getCell(cellNum++);
+		// 每坪管理費
+		double baseManagementFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
 		excelData.setBaseManagementFee(baseManagementFee);
 		cell = row.getCell(cellNum++);
+		// 管理費
+		double managementFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setManagementFee(managementFee);
+		cell = row.getCell(cellNum++);
 		// 汽車數量
-		int carNum = Integer.valueOf(convertCellValueToString(cell,evaluator));
-		excelData.setCarSpace(carNum);
+		int carNum = Integer.parseInt(convertCellValueToString(cell,evaluator));
+		excelData.setCarNum(carNum);
 		cell = row.getCell(cellNum++);
 		// 機車數量
-		int motorcycleNum = Integer.valueOf(convertCellValueToString(cell,evaluator));
-		excelData.setMotorcycleSpace(motorcycleNum);
+		int motorcycleNum = Integer.parseInt(convertCellValueToString(cell,evaluator));
+		excelData.setMotorcycleNum(motorcycleNum);
 		cell = row.getCell(cellNum++);
-		// 繳款頻率
-		String paymentFrequency = convertCellValueToString(cell,evaluator);
-		excelData.setPaymentFrequency(paymentFrequency);
+		// 減免管理費比例
+		double reductionRate = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setReductionRate(reductionRate);
 		cell = row.getCell(cellNum++);
-		// 基礎管理費
-		int monthlyManagementFee = Integer.valueOf(convertCellValueToString(cell,evaluator));
+		// 扣除減免後管理費
+		double adjustedManagementFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setAdjustedManagementFee(adjustedManagementFee);
+		cell = row.getCell(cellNum++);
+		// 汽車清潔費
+		double carCleaningFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setCarCleaningFee(carCleaningFee);
+		cell = row.getCell(cellNum++);
+		// 機車清潔費
+		double motorcycleCleaningFee = Double.parseDouble(convertCellValueToString(cell,evaluator));
+		excelData.setMotorcycleCleaningFee(motorcycleCleaningFee);
+		cell = row.getCell(cellNum++);
+		// 每月應收管理費
+		int monthlyManagementFee = Integer.parseInt(convertCellValueToString(cell,evaluator));
 		excelData.setMonthlyManagementFee(monthlyManagementFee);
 		cell = row.getCell(cellNum++);
 		// 要列印
-		boolean printable = Boolean.valueOf("V".equals(convertCellValueToString(cell,evaluator)));
+		boolean printable = "V".equals(convertCellValueToString(cell, evaluator));
 		excelData.setPrintable(printable);
 		cell = row.getCell(cellNum++);
 		return excelData;
@@ -153,36 +177,24 @@ public class XlsxLoader {
 		evaluator.evaluateFormulaCell(cell);
 		String doortablet = convertCellValueToString(cell,evaluator);
 		excelData.setDoortablet(doortablet);
-		// 收款對象
 		cell = row.getCell(cellNum++);
-		evaluator.evaluateFormulaCell(cell);
-		String receiver = convertCellValueToString(cell,evaluator);
-		excelData.setReceiver(receiver);
+		// 年月 sqllite 日期格式只能支援 yyyy-MM-dd
+		String zyymm = convertCellValueToString(cell,evaluator);
+		excelData.setZyymm(zyymm.replace('/','-'));
 		cell = row.getCell(cellNum++);
-		// 起日
-		String beginDate = convertCellValueToString(cell,evaluator);
-		excelData.setBeginDate(beginDate);
-		cell = row.getCell(cellNum++);
-		// 迄日
-		String endDate = convertCellValueToString(cell,evaluator);
-		excelData.setEndDate(endDate);
-		cell = row.getCell(cellNum++);
-		// 汽車數量
-		int carNum = Integer.valueOf(convertCellValueToString(cell,evaluator));
-		excelData.setCarNum(carNum);
-		cell = row.getCell(cellNum++);
-		// 機車數量
-		int motorcycleNum = Integer.valueOf(convertCellValueToString(cell,evaluator));
-		excelData.setMotorcycleNum(motorcycleNum);
-		cell = row.getCell(cellNum++);
-		// 前置說明
+		// 款項說明
 		String paymentRmk = convertCellValueToString(cell,evaluator);
 		excelData.setPaymentRmk(paymentRmk);
 		cell = row.getCell(cellNum++);
-		// 其它應收款項
+		// 應收款項
 		String otherAmountStr = convertCellValueToString(cell,evaluator) ;
 		BigDecimal otherAmount = otherAmountStr == null? null:new BigDecimal(otherAmountStr);
 		excelData.setOtherAmount(otherAmount);
+		cell = row.getCell(cellNum++);
+		// 已沖銷: '':未沖銷,V:已沖銷
+		String reversedStr = convertCellValueToString(cell,evaluator) ;
+		int reversed = "V".equals(reversedStr)? 1 : 0;
+		excelData.setReversed(reversed);
 		cell = row.getCell(cellNum++);
 		return excelData;
 	}

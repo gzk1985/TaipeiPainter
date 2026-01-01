@@ -19,11 +19,8 @@ public class SqliteDAO {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
 	
 	public static List<DoortabletInfo> getDoortabletInfoList(){
-		String sql = "SELECT i.doortablet,i.doortablet_code,i.owner_name,i.printable,r.receiver\n"
+		String sql = "SELECT i.doortablet,i.doortablet_code,i.owner_name,i.printable,i.receiver_name\n"
 				+ "FROM doortablet_info AS i\n"
-				+ "LEFT JOIN (\n"
-				+ "SELECT DISTINCT doortablet, receiver FROM management_fees_receivable\n"
-				+ ") AS r ON (i.doortablet = r.doortablet)\n"
 				+ "WHERE i.base_management_fee > 0 ;";
 		List<DoortabletInfo> list = new ArrayList<>();
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
@@ -35,7 +32,7 @@ public class SqliteDAO {
 						o.setDoortablet(res.getString("doortablet"));
 						o.setDoortabletCode(res.getString("doortablet_code"));
 						o.setOwnerName(res.getString("owner_name"));
-						o.setReceiver(res.getString("receiver"));
+						o.setReceiverName(res.getString("receiver_name"));
 						o.setPrintable(res.getBoolean("printable"));
 						list.add(o);
 					}
@@ -48,7 +45,23 @@ public class SqliteDAO {
 	}
 	
 	public static void saveOwnerDoortabletInfo(List<DoortabletInfo> datas) {
-		String sql = "INSERT INTO doortablet_info (doortablet,owner_name,doortablet_code,number_of_square_meters,base_management_fee,car_space,motorcycle_space,payment_frequency,monthly_management_fee,printable) VALUES (?,?,?,?,?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO doortablet_info (doortablet" +
+				",owner_name" +
+				",receiver_name" +
+				",doortablet_code" +
+				",number_of_square_meters" +
+				",parking_space_square_meters" +
+				",number_of_square_meters_for_management_fee" +
+				",base_management_fee" +
+				",management_fee" +
+				",car_num" +
+				",motorcycle_num" +
+				",reduction_rate" +
+				",adjusted_management_fee" +
+				",car_cleaning_fee" +
+				",motorcycle_cleaning_fee" +
+				",monthly_management_fee" +
+				",printable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -57,14 +70,21 @@ public class SqliteDAO {
 						pstmt.clearParameters();
 						pstmt.setString(1, obj.getDoortablet());
 						pstmt.setString(2, obj.getOwnerName());
-						pstmt.setString(3, obj.getDoortabletCode());
-						pstmt.setDouble(4, obj.getNumberfSquareMeters());
-						pstmt.setDouble(5, obj.getBaseManagementFee());
-						pstmt.setInt(6, obj.getCarSpace());
-						pstmt.setInt(7, obj.getMotorcycleSpace());
-						pstmt.setString(8, obj.getPaymentFrequency());
-						pstmt.setDouble(9, obj.getMonthlyManagementFee());
-						pstmt.setBoolean(10, obj.isPrintable());
+						pstmt.setString(3, obj.getReceiverName());
+						pstmt.setString(4, obj.getDoortabletCode());
+						pstmt.setDouble(5, obj.getNumberfSquareMeters());
+						pstmt.setDouble(6, obj.getParkingSpaceSquareMeters());
+						pstmt.setDouble(7, obj.getNumberOfSquareMetersForManagementFee());
+						pstmt.setDouble(8, obj.getBaseManagementFee());
+						pstmt.setDouble(9 ,obj.getManagementFee());
+						pstmt.setInt(10, obj.getCarNum());
+						pstmt.setInt(11, obj.getMotorcycleNum());
+						pstmt.setDouble(12, obj.getReductionRate());
+						pstmt.setDouble(13, obj.getAdjustedManagementFee());
+						pstmt.setDouble(14, obj.getCarCleaningFee());
+						pstmt.setDouble(15, obj.getMotorcycleCleaningFee());
+						pstmt.setDouble(16, obj.getMonthlyManagementFee());
+						pstmt.setBoolean(17, obj.isPrintable());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(ExceptionUtils.getStackTrace(e));
@@ -78,7 +98,11 @@ public class SqliteDAO {
 		}
 	}
 	public static void saveManagementFeesReceivable(List<ManagementFeesReceivable> datas) {
-		String sql = "INSERT INTO management_fees_receivable (doortablet,receiver,begin_date,end_date,car_num,motorcycle_num,payment_rmk,other_amount) VALUES (?,?,?,?,?,?,?,?) ;";
+		String sql = "INSERT INTO management_fees_receivable (doortablet" +
+				",zyymm" +
+				",payment_rmk" +
+				",other_amount" +
+				",reversed) VALUES (?,?,?,?,?) ;";
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -86,13 +110,10 @@ public class SqliteDAO {
 					try {
 						pstmt.clearParameters();
 						pstmt.setString(1, obj.getDoortablet());
-						pstmt.setString(2, obj.getReceiver());
-						pstmt.setString(3, obj.getBeginDate());
-						pstmt.setString(4, obj.getEndDate());
-						pstmt.setInt(5, obj.getCarNum());
-						pstmt.setInt(6, obj.getMotorcycleNum());
-						pstmt.setString(7, obj.getPaymentRmk());
-						pstmt.setBigDecimal(8, obj.getOtherAmount());
+						pstmt.setString(2, obj.getZyymm());
+						pstmt.setString(3, obj.getPaymentRmk());
+						pstmt.setBigDecimal(4, obj.getOtherAmount());
+						pstmt.setInt(5, obj.getReversed());
 						pstmt.addBatch();
 					} catch (SQLException e) {
 						LOG.error(ExceptionUtils.getStackTrace(e));

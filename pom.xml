@@ -10,6 +10,7 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!--suppress UnresolvedMavenProperty -->
 		<custom.lib-path>${project.parent.basedir}/libs</custom.lib-path>
 	</properties>
 	<dependencies>
@@ -32,6 +33,13 @@
 			<artifactId>jasperreports-pdf</artifactId>
 			<version>7.0.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.30</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>

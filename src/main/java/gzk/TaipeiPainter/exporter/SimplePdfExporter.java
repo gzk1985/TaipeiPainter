@@ -15,6 +15,7 @@ import gzk.TaipeiPainter.dao.SqliteConnector;
 import gzk.TaipeiPainter.dao.SqliteDAO;
 import gzk.TaipeiPainter.entity.DoortabletInfo;
 import net.sf.jasperreports.engine.*;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 public class SimplePdfExporter {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
@@ -43,18 +44,16 @@ public class SimplePdfExporter {
 		
 	}
 	/**
-	 * 產生PDF類別
-	 * @param portfolioMainInfoList TITLE資料
-	 * @param portfolioWeightsPdfInfoList 詳細資料
-	 * @param portfolioProposalPo 建議書資料
-	 * @param portfolioPdf 總金額
+	 * 產生PDF報表
+	 * @param doortabletInfo
 	 */
-	public void exportPdfReport(DoortabletInfo doortabletInfo) {
+	public void exportPdfReport(DoortabletInfo doortabletInfo,String thisDate) {
 		File fileOutputPath = new File(outputDir,doortabletInfo.getDoortabletCode()+".pdf");
 		Map<String,Object> map = new HashMap<>();
 		// 報表TITLE文字設定
 		map.put("owner_doorplate", doortabletInfo.getDoortablet());
-		map.put("receiver", doortabletInfo.getReceiver());
+		map.put("receiver", doortabletInfo.getReceiverName());
+		map.put("this_date",thisDate);
 		try (InputStream in = SimplePdfExporter.class.getResourceAsStream(this.jasperFile)){
 			
 			// 讀取jrxml的InputStream
@@ -66,6 +65,22 @@ public class SimplePdfExporter {
 				JasperPrint jasperPrint = JasperFillManager.fillReport(in, map, conn);
 				LOG.info(String.format("PDFExporter JasperFillManager.fillReport(%s, %s)", "/管理費補繳通知單.jrxml", doortabletInfo.getDoortablet()));
 				JasperExportManager.exportReportToPdfFile(jasperPrint, fileOutputPath.getAbsolutePath());
+			}
+
+			// 2) 合併另一個 PDF（例如：resources 下的 /pdf/another.pdf）
+			//    你可以把來源改成方法參數或檔案上傳位置
+			File anotherPdf = new File(reportRootPath + "/pdf/management_fee_detail.pdf");
+			if (anotherPdf.exists()) {
+				File merged = new File(outputDir, doortabletInfo.getDoortabletCode() + "_merged.pdf");
+				PDFMergerUtility merger = new PDFMergerUtility();
+				merger.setDestinationFileName(merged.getAbsolutePath());
+				merger.addSource(fileOutputPath);       // Jasper 產出的 PDF
+				merger.addSource(anotherPdf);           // 要合併的 PDF
+				merger.mergeDocuments(null);
+
+				LOG.info("Merged PDF generated: " + merged.getAbsolutePath());
+			} else {
+				LOG.warn("Another PDF not found: " + anotherPdf.getAbsolutePath());
 			}
 
 		} catch (Exception e) {

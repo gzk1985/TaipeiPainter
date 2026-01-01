@@ -3,51 +3,38 @@ package gzk.TaipeiPainter.entity;
 import java.math.BigDecimal;
 
 public class ManagementFeesReceivable {
+	/**
+	 * 門牌
+	 */
 	private String doortablet ;
-	private String receiver ;
-	private String beginDate ;
-	private String endDate ;
-	private int carNum = 0 ;
-	private int motorcycleNum = 0 ;
+	/**
+	 * 年月
+	 */
+	private String zyymm;
+	/**
+	 * 前置說明
+	 */
 	private String paymentRmk ;
+	/**
+	 * 應收款項
+	 */
 	private BigDecimal otherAmount ;
-	
+
+	/**
+	 * 已沖銷
+	 */
+	private int reversed ;
 	public String getDoortablet() {
 		return doortablet;
 	}
 	public void setDoortablet(String doortablet) {
 		this.doortablet = doortablet;
 	}
-	
-	public String getReceiver() {
-		return receiver;
+	public String getZyymm() {
+		return zyymm;
 	}
-	public void setReceiver(String receiver) {
-		this.receiver = receiver;
-	}
-	public String getBeginDate() {
-		return beginDate;
-	}
-	public void setBeginDate(String beginDate) {
-		this.beginDate = beginDate;
-	}
-	public String getEndDate() {
-		return endDate;
-	}
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
-	}
-	public int getCarNum() {
-		return carNum;
-	}
-	public void setCarNum(int carNum) {
-		this.carNum = carNum;
-	}
-	public int getMotorcycleNum() {
-		return motorcycleNum;
-	}
-	public void setMotorcycleNum(int motorcycleNum) {
-		this.motorcycleNum = motorcycleNum;
+	public void setZyymm(String zyymm) {
+		this.zyymm = zyymm;
 	}
 	public String getPaymentRmk() {
 		return paymentRmk;
@@ -61,5 +48,12 @@ public class ManagementFeesReceivable {
 	public void setOtherAmount(BigDecimal otherAmount) {
 		this.otherAmount = otherAmount;
 	}
-	
+
+	public int getReversed() {
+		return reversed;
+	}
+
+	public void setReversed(int reversed) {
+		this.reversed = reversed;
+	}
 }

@@ -13,7 +13,7 @@ import gzk.TaipeiPainter.entity.DoortabletInfo;
 
 public class PdfPrinter {
 	private static final Logger LOG = LogManager.getLogger(PdfPrinter.class);
-	public static void print(String settingsFileName,String jasperFile) {
+	public static void print(String settingsFileName,String jasperFile,String thisDate) {
         try (Workbook book = XlsxLoader.getWorkbook(settingsFileName);){
 			
 			SqliteDAO.saveOwnerDoortabletInfo(XlsxLoader.parseOwnerDoortabletInfoSheet(book));
@@ -21,7 +21,7 @@ public class PdfPrinter {
 			SimplePdfExporter export = new SimplePdfExporter(jasperFile);
 			for(DoortabletInfo door:SqliteDAO.getDoortabletInfoList()) {
 				if(door.isPrintable()) {
-					export.exportPdfReport(door);
+					export.exportPdfReport(door,thisDate);
 				}else {
 					LOG.info(String.format("%s 設定不列印", door.getDoortablet()));
 				}
