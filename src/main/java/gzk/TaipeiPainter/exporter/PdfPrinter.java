@@ -18,6 +18,7 @@ public class PdfPrinter {
 			
 			SqliteDAO.saveOwnerDoortabletInfo(XlsxLoader.parseOwnerDoortabletInfoSheet(book));
 			SqliteDAO.saveManagementFeesReceivable(XlsxLoader.parseManagementFeesReceivableSheet(book));
+			SqliteDAO.initManagementFeesReceivable(thisDate);
 			SimplePdfExporter export = new SimplePdfExporter(jasperFile);
 			for(DoortabletInfo door:SqliteDAO.getDoortabletInfoList()) {
 				if(door.isPrintable()) {

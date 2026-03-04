@@ -18,6 +18,11 @@ public class App {
         }
         String settingsFilePath = args[0];
         String thisDate = args[1].replace("/","-");
+        //檢查 thisDate 格式是否正確 YYYY-MM-DD
+        if(!thisDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        	LOG.error("通知單日期格式錯誤，應為 YYYY-MM-DD");
+        	return ;
+        }
         PdfPrinter.print(settingsFilePath,"管理費補繳通知單-20251230.jasper",thisDate);
     }
 }

@@ -17,7 +17,11 @@ import gzk.TaipeiPainter.entity.DoortabletInfo;
 
 public class SqliteDAO {
 	private static final Logger LOG = LogManager.getLogger(SqliteDAO.class);
-	
+
+	/**
+	 * 取得門牌資訊列表
+	 * @return
+	 */
 	public static List<DoortabletInfo> getDoortabletInfoList(){
 		String sql = "SELECT i.doortablet,i.doortablet_code,i.owner_name,i.printable,i.receiver_name\n"
 				+ "FROM doortablet_info AS i\n"
@@ -43,7 +47,11 @@ public class SqliteDAO {
 		}
 		return list ;
 	}
-	
+
+	/**
+	 * 儲存門牌資訊列表
+	 * @param datas
+	 */
 	public static void saveOwnerDoortabletInfo(List<DoortabletInfo> datas) {
 		String sql = "INSERT INTO doortablet_info (doortablet" +
 				",owner_name" +
@@ -120,6 +128,23 @@ public class SqliteDAO {
 					}
 				});
 				pstmt.executeBatch();
+				conn.commit();
+			}
+		} catch (SQLException e) {
+			LOG.error(ExceptionUtils.getStackTrace(e));
+		}
+	}
+	//初始化本期應收管理費
+	public static void initManagementFeesReceivable(String thisDate){
+		String sql = "INSERT INTO management_fees_receivable (doortablet,zyymm,payment_rmk,other_amount,reversed) \n" +
+				"SELECT doortablet,cast(? as date) AS zyymm,'本期管理費',NULL,0 \n" +
+				"FROM doortablet_info " ;
+		try(Connection conn = SqliteConnector.getInstance().getConnection()){
+			conn.setAutoCommit(false);
+			try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+				pstmt.clearParameters();
+				pstmt.setString(1, thisDate);
+				pstmt.executeUpdate();
 				conn.commit();
 			}
 		} catch (SQLException e) {
