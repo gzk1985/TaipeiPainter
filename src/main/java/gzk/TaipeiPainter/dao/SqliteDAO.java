@@ -137,7 +137,7 @@ public class SqliteDAO {
 	//初始化本期應收管理費
 	public static void initManagementFeesReceivable(String thisDate){
 		String sql = "INSERT INTO management_fees_receivable (doortablet,zyymm,payment_rmk,other_amount,reversed) \n" +
-				"SELECT doortablet,cast(? as date) AS zyymm,'本期管理費',NULL,0 \n" +
+				"SELECT doortablet,date(?) AS zyymm,'本期管理費',NULL,0 \n" +
 				"FROM doortablet_info " ;
 		try(Connection conn = SqliteConnector.getInstance().getConnection()){
 			conn.setAutoCommit(false);
